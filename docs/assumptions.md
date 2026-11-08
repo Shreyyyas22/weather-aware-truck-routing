@@ -33,3 +33,7 @@
   segments.
 - ETA is initially proportional to cumulative route distance when segment-level
   travel times are unavailable.
+- Checkpoints are created at 10, 25, or 50-mile intervals along the routing
+  provider's geometry. The start checkpoint represents zero miles; each later
+  checkpoint represents the segment since the prior checkpoint, including the
+  final partial segment.
