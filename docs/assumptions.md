@@ -32,7 +32,8 @@
   a count of checkpoints. Average risk is mileage-weighted across traversable
   segments.
 - ETA is initially proportional to cumulative route distance when segment-level
-  travel times are unavailable.
+  travel times are unavailable. The supplied timezone-aware departure offset is
+  retained until provider location timezones are available.
 - Checkpoints are created at 10, 25, or 50-mile intervals along the routing
   provider's geometry. The start checkpoint represents zero miles; each later
   checkpoint represents the segment since the prior checkpoint, including the
