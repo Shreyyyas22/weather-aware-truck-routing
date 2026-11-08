@@ -130,3 +130,20 @@ class CheckpointRiskTestCase(SimpleTestCase):
         )
 
         self.assertEqual(result["overall_risk"], "NO_TRAVEL")
+
+
+class InvalidMeasurementTestCase(SimpleTestCase):
+
+    def test_invalid_measurements_raise_value_error(self):
+        invalid_values = [None, "25", -0.01, float("inf"), float("nan"), True]
+
+        for value in invalid_values:
+            with self.subTest(value=value):
+                with self.assertRaises(ValueError):
+                    calculate_wind_risk(value)
+
+    def test_invalid_load_weight_raises_value_error(self):
+        for value in [None, "30000", -1, float("inf"), True]:
+            with self.subTest(value=value):
+                with self.assertRaises(ValueError):
+                    apply_load_rules(40, value)

@@ -1,9 +1,32 @@
+from math import isfinite
+
+
+RISK_PRIORITY = {
+    "LOW": 1,
+    "MODERATE": 2,
+    "HIGH": 3,
+    "SEVERE": 4,
+    "NO_TRAVEL": 5,
+}
+
+
+def _validate_non_negative_number(value, field_name):
+    """Return a valid physical measurement or raise a useful error."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{field_name} must be a finite non-negative number")
+    if not isfinite(value) or value < 0:
+        raise ValueError(f"{field_name} must be a finite non-negative number")
+    return value
+
+
 def calculate_wind_risk(wind_speed):
     """
     Classify wind speed according to the assessment rules.
 
     wind_speed: Wind speed in miles per hour (mph)
     """
+
+    wind_speed = _validate_non_negative_number(wind_speed, "wind_speed")
 
     if wind_speed < 25:
         return "LOW"
@@ -28,6 +51,8 @@ def calculate_rain_risk(rain_rate):
     rain_rate: Rainfall in inches per hour.
     """
 
+    rain_rate = _validate_non_negative_number(rain_rate, "rain_rate")
+
     if rain_rate < 0.10:
         return "LOW"
 
@@ -50,6 +75,8 @@ def calculate_snow_risk(snow_rate):
 
     snow_rate: Snowfall in inches per hour.
     """
+
+    snow_rate = _validate_non_negative_number(snow_rate, "snow_rate")
 
     if snow_rate < 0.5:
         return "LOW"
@@ -74,6 +101,9 @@ def apply_load_rules(wind_speed, load_weight):
     wind_speed: Wind speed in mph
     load_weight: Truck load in pounds
     """
+
+    wind_speed = _validate_non_negative_number(wind_speed, "wind_speed")
+    load_weight = _validate_non_negative_number(load_weight, "load_weight")
 
     # Rule 1: Wind >= 55 mph
     if wind_speed >= 55:
@@ -107,14 +137,6 @@ def calculate_checkpoint_risk(
 
     snow_risk = calculate_snow_risk(snow_rate)
 
-    risk_priority = {
-        "LOW": 1,
-        "MODERATE": 2,
-        "HIGH": 3,
-        "SEVERE": 4,
-        "NO_TRAVEL": 5
-    }
-
     risks = {
         "wind": wind_risk,
         "rain": rain_risk,
@@ -123,7 +145,7 @@ def calculate_checkpoint_risk(
 
     overall_risk = max(
         risks.values(),
-        key=lambda risk: risk_priority[risk]
+        key=lambda risk: RISK_PRIORITY[risk]
     )
 
     return {
