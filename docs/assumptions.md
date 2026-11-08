@@ -23,6 +23,9 @@
   recommendation whenever a route without one is available.
 - If forecast data is unavailable for a checkpoint ETA, the checkpoint is
   labelled unavailable; current conditions are never substituted.
+- Forecasts use Open-Meteo hourly wind, rain, and snowfall matched to the ETA
+  hour in UTC. The API is requested in mph and inches; hourly precipitation
+  amounts are treated as inches per hour for the assessment's rate thresholds.
 - The initial checkpoint interval is 25 miles, with 10 and 50 miles available
   to the user.
 - Recommendation average-risk mapping is Low=1, Moderate=2, High=3,
