@@ -22,5 +22,9 @@
   to the user.
 - Recommendation average-risk mapping is Low=1, Moderate=2, High=3,
   Severe=4. No Travel is handled separately under the unsafe-route policy.
+- Each checkpoint carries the mileage of the route segment ending at that
+  checkpoint. Severe and High metrics are the sum of those segment miles, not
+  a count of checkpoints. Average risk is mileage-weighted across traversable
+  segments.
 - ETA is initially proportional to cumulative route distance when segment-level
   travel times are unavailable.
