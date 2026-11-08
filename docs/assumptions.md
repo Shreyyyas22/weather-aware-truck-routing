@@ -14,6 +14,11 @@
 
 ## Later planning phases
 
+- Routing uses TomTom's truck directions and geocoding APIs. Its
+  response is normalized to route id, distance in meters, duration in seconds,
+  and latitude/longitude route geometry before the rest of the application
+  uses it. The service may return fewer than three alternatives; those routes
+  remain valid and are shown as available options.
 - A route with a **No Travel** checkpoint is unsafe and is excluded from
   recommendation whenever a route without one is available.
 - If forecast data is unavailable for a checkpoint ETA, the checkpoint is
