@@ -32,39 +32,40 @@ export default function RouteCard({
       onClick={onSelect}
       className={`relative rounded-2xl border p-4 transition cursor-pointer ${
         isSelected
-          ? 'bg-slate-800/90 border-blue-500 ring-2 ring-blue-500/30 shadow-xl'
-          : 'bg-slate-900/80 border-slate-800 hover:border-slate-700 hover:bg-slate-800/50'
+          ? 'bg-slate-800/95 border-blue-500 ring-2 ring-blue-500/30 shadow-xl'
+          : 'bg-slate-900/90 border-slate-800/80 hover:border-slate-700 hover:bg-slate-850/80'
       }`}
     >
       {/* Top Header: Route title & Badges */}
-      <div className="flex items-start justify-between gap-2 mb-3">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex items-center gap-2.5 min-w-0">
           <span
-            className="w-3.5 h-3.5 rounded-full ring-2 ring-white/10"
+            className="w-3.5 h-3.5 rounded-full ring-2 ring-white/10 shrink-0"
             style={{ backgroundColor: routeColor.primary }}
           ></span>
-          <h3 className="font-bold text-base text-white capitalize">
+          <h3 className="font-bold text-base text-white capitalize truncate">
             {route.id.replace('-', ' ')}
           </h3>
           {isSelected && (
-            <span className="text-[10px] bg-blue-500/20 text-blue-300 border border-blue-500/30 px-2 py-0.5 rounded-full font-medium">
-              Active Map View
+            <span className="text-[10px] bg-blue-500/20 text-blue-300 border border-blue-500/30 px-2 py-0.5 rounded-full font-medium shrink-0">
+              Active Map
             </span>
           )}
         </div>
 
+        {/* Status Badge */}
         {isRecommended ? (
-          <span className="flex items-center gap-1 text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded-full shadow-sm animate-pulse">
+          <span className="shrink-0 flex items-center gap-1 text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded-full shadow-sm">
             <Award className="w-3.5 h-3.5 text-emerald-400" />
-            RECOMMENDED
+            Best Route
           </span>
         ) : hasNoTravel ? (
-          <span className="flex items-center gap-1 text-[11px] font-bold bg-purple-900/60 text-purple-200 border border-purple-500/60 px-2 py-0.5 rounded-full">
+          <span className="shrink-0 flex items-center gap-1 text-[11px] font-bold bg-purple-900/60 text-purple-200 border border-purple-500/60 px-2 py-0.5 rounded-full">
             <XCircle className="w-3.5 h-3.5 text-purple-400" />
-            NO TRAVEL
+            No Travel
           </span>
         ) : (
-          <span className="text-[11px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md border border-slate-700">
+          <span className="shrink-0 text-[11px] text-slate-400 bg-slate-800 px-2.5 py-0.5 rounded-full border border-slate-700">
             Alternative
           </span>
         )}
@@ -89,13 +90,13 @@ export default function RouteCard({
       )}
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-2 gap-2 text-xs">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
         <div className="bg-slate-800/60 rounded-xl p-2.5 border border-slate-700/50">
           <span className="text-slate-400 text-[11px] flex items-center gap-1">
             <Navigation className="w-3 h-3 text-slate-400" />
             Distance
           </span>
-          <span className="font-semibold text-white text-sm mt-0.5 block">
+          <span className="font-semibold text-white text-sm mt-0.5 block font-mono">
             {formatMiles(route.distance_meters)}
           </span>
         </div>
@@ -103,43 +104,43 @@ export default function RouteCard({
         <div className="bg-slate-800/60 rounded-xl p-2.5 border border-slate-700/50">
           <span className="text-slate-400 text-[11px] flex items-center gap-1">
             <Clock className="w-3 h-3 text-slate-400" />
-            Est. Duration
+            Est. Time
           </span>
-          <span className="font-semibold text-white text-sm mt-0.5 block">
+          <span className="font-semibold text-white text-sm mt-0.5 block font-mono">
             {formatDuration(route.duration_seconds)}
           </span>
         </div>
 
         <div className={`rounded-xl p-2.5 border ${
-          severeMiles > 0 ? 'bg-red-500/10 border-red-500/30' : 'bg-slate-800/60 border-slate-700/50'
+          severeMiles > 0 ? 'bg-red-500/15 border-red-500/30' : 'bg-slate-800/60 border-slate-700/50'
         }`}>
           <span className="text-slate-400 text-[11px] flex items-center gap-1">
             <Flame className={`w-3 h-3 ${severeMiles > 0 ? 'text-red-400' : 'text-slate-400'}`} />
             Severe Miles
           </span>
-          <span className={`font-semibold text-sm mt-0.5 block ${severeMiles > 0 ? 'text-red-400' : 'text-white'}`}>
+          <span className={`font-semibold text-sm mt-0.5 block font-mono ${severeMiles > 0 ? 'text-red-400 font-bold' : 'text-white'}`}>
             {severeMiles.toFixed(1)} mi
           </span>
         </div>
 
         <div className={`rounded-xl p-2.5 border ${
-          highMiles > 0 ? 'bg-orange-500/10 border-orange-500/30' : 'bg-slate-800/60 border-slate-700/50'
+          highMiles > 0 ? 'bg-orange-500/15 border-orange-500/30' : 'bg-slate-800/60 border-slate-700/50'
         }`}>
           <span className="text-slate-400 text-[11px] flex items-center gap-1">
             <ShieldAlert className={`w-3 h-3 ${highMiles > 0 ? 'text-orange-400' : 'text-slate-400'}`} />
-            High Risk Miles
+            High Miles
           </span>
-          <span className={`font-semibold text-sm mt-0.5 block ${highMiles > 0 ? 'text-orange-400' : 'text-white'}`}>
+          <span className={`font-semibold text-sm mt-0.5 block font-mono ${highMiles > 0 ? 'text-orange-400 font-bold' : 'text-white'}`}>
             {highMiles.toFixed(1)} mi
           </span>
         </div>
       </div>
 
-      {/* Footer Info: Average Risk & Checkpoints */}
-      <div className="mt-3 pt-2.5 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+      {/* Footer Info: Average Risk & Checkpoint Count */}
+      <div className="mt-3 pt-2.5 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400 font-sans">
         <div>
-          <span>Avg Risk: </span>
-          <strong className="text-slate-200">
+          <span>Avg Risk Score: </span>
+          <strong className="text-slate-200 font-mono">
             {avgRisk != null ? avgRisk.toFixed(2) : 'N/A'}
           </strong>
           {avgRisk != null && (
@@ -149,7 +150,7 @@ export default function RouteCard({
           )}
         </div>
         <div>
-          <span>{route.checkpoints?.length ?? 0} Checkpoints</span>
+          <span>{route.checkpoints?.length ?? 0} Checkpoints sampled</span>
         </div>
       </div>
     </div>

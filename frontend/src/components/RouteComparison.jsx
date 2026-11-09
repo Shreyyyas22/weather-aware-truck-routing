@@ -15,8 +15,8 @@ export default function RouteComparison({
 
   return (
     <div className="space-y-4">
-      {/* Route Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      {/* Route Cards Stack (Spacious vertical cards) */}
+      <div className="flex flex-col gap-3">
         {routes.map((route) => {
           const isRec = route.id === recommendedId;
           const isSelected = route.id === selectedRouteId;
@@ -47,13 +47,13 @@ export default function RouteComparison({
             <table className="w-full text-xs text-left">
               <thead className="bg-slate-800/80 text-slate-300 border-b border-slate-800">
                 <tr>
-                  <th className="py-2 px-3">Route</th>
-                  <th className="py-2 px-3">Distance</th>
-                  <th className="py-2 px-3">Est. Time</th>
-                  <th className="py-2 px-3 text-red-400">Severe Miles</th>
-                  <th className="py-2 px-3 text-orange-400">High-Risk Miles</th>
-                  <th className="py-2 px-3">Avg Risk Score</th>
-                  <th className="py-2 px-3">Status</th>
+                  <th className="py-2.5 px-3">Route</th>
+                  <th className="py-2.5 px-3">Distance</th>
+                  <th className="py-2.5 px-3">Est. Time</th>
+                  <th className="py-2.5 px-3 text-red-400">Severe Miles</th>
+                  <th className="py-2.5 px-3 text-orange-400">High-Risk Miles</th>
+                  <th className="py-2.5 px-3">Avg Risk</th>
+                  <th className="py-2.5 px-3">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 font-mono text-slate-300">
@@ -72,7 +72,7 @@ export default function RouteComparison({
                           : 'hover:bg-slate-800/50'
                       }`}
                     >
-                      <td className="py-2 px-3 font-sans font-medium capitalize flex items-center gap-2">
+                      <td className="py-2.5 px-3 font-sans font-medium capitalize flex items-center gap-1.5">
                         <span>{route.id.replace('-', ' ')}</span>
                         {isRec && (
                           <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded font-bold border border-emerald-500/30">
@@ -80,18 +80,18 @@ export default function RouteComparison({
                           </span>
                         )}
                       </td>
-                      <td className="py-2 px-3">{formatMiles(route.distance_meters)}</td>
-                      <td className="py-2 px-3">{formatDuration(route.duration_seconds)}</td>
-                      <td className={`py-2 px-3 ${s?.severe_miles > 0 ? 'text-red-400 font-bold' : ''}`}>
+                      <td className="py-2.5 px-3">{formatMiles(route.distance_meters)}</td>
+                      <td className="py-2.5 px-3">{formatDuration(route.duration_seconds)}</td>
+                      <td className={`py-2.5 px-3 ${s?.severe_miles > 0 ? 'text-red-400 font-bold' : ''}`}>
                         {s?.severe_miles?.toFixed(1) ?? '0.0'} mi
                       </td>
-                      <td className={`py-2 px-3 ${s?.high_miles > 0 ? 'text-orange-400 font-bold' : ''}`}>
+                      <td className={`py-2.5 px-3 ${s?.high_miles > 0 ? 'text-orange-400 font-bold' : ''}`}>
                         {s?.high_miles?.toFixed(1) ?? '0.0'} mi
                       </td>
-                      <td className="py-2 px-3">
+                      <td className="py-2.5 px-3">
                         {s?.average_risk != null ? s.average_risk.toFixed(2) : 'N/A'}
                       </td>
-                      <td className="py-2 px-3 font-sans">
+                      <td className="py-2.5 px-3 font-sans">
                         {hasNoTravel ? (
                           <span className="text-purple-300 font-bold flex items-center gap-1">
                             <AlertOctagon className="w-3.5 h-3.5" />

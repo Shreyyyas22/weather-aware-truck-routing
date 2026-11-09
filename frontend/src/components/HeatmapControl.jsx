@@ -20,7 +20,6 @@ export default function HeatmapControl({
   isHeatmapVisible,
   onToggleVisibility,
 }) {
-
   const [isPlaying, setIsPlaying] = useState(false);
   const playTimerRef = useRef(null);
 
@@ -52,7 +51,7 @@ export default function HeatmapControl({
     if (isPlaying) {
       playTimerRef.current = setInterval(() => {
         onChangeHour((prev) => (prev >= maxHour ? 0 : prev + 1));
-      }, 700);
+      }, 650);
     } else {
       if (playTimerRef.current) clearInterval(playTimerRef.current);
     }
@@ -66,15 +65,15 @@ export default function HeatmapControl({
   const peakRiskDetails = getRiskDetails(peakRisk);
 
   return (
-    <div className="bg-slate-900/95 border border-slate-800 rounded-2xl p-4 shadow-2xl text-slate-200 backdrop-blur">
+    <div className="bg-slate-900/95 border border-slate-800/90 rounded-2xl p-3.5 sm:p-4 shadow-2xl text-slate-200 backdrop-blur-md">
       {/* Top Bar: Title & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 rounded-xl text-indigo-400">
+          <div className="p-2 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 rounded-xl text-indigo-400 shrink-0">
             <Layers className="w-4 h-4" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h3 className="font-bold text-white text-sm">
                 Corridor Weather Heatmap
               </h3>
@@ -83,19 +82,19 @@ export default function HeatmapControl({
               </span>
             </div>
             <p className="text-[11px] text-slate-400 mt-0.5">
-              Simulate weather patterns along the haul corridor over time
+              Explore dynamic weather risk and storm systems along the haul corridor
             </p>
           </div>
         </div>
 
         {/* Visibility Toggle & Mode */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             type="button"
             onClick={onToggleVisibility}
-            className={`text-xs px-2.5 py-1.5 rounded-lg border font-medium transition ${
+            className={`text-xs px-2.5 py-1.5 rounded-xl border font-medium transition ${
               isHeatmapVisible
-                ? 'bg-blue-600 text-white border-blue-500'
+                ? 'bg-blue-600 text-white border-blue-500 shadow-sm'
                 : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-white'
             }`}
           >
@@ -106,7 +105,7 @@ export default function HeatmapControl({
             value={heatmapMode}
             onChange={(e) => onChangeMode(e.target.value)}
             disabled={!isHeatmapVisible}
-            className="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+            className="bg-slate-800 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
           >
             <option value="risk">Composite Risk</option>
             <option value="wind">Wind Speed</option>
@@ -116,14 +115,14 @@ export default function HeatmapControl({
       </div>
 
       {/* Slider Controls */}
-      <div className="mt-4 space-y-3">
+      <div className="mt-3.5 space-y-3">
         {/* Active Time Indicator */}
-        <div className="flex items-center justify-between text-xs">
+        <div className="flex items-center justify-between text-xs flex-wrap gap-2">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-sm font-bold text-white bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700">
+            <span className="font-mono text-sm font-bold text-white bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700 shadow-inner">
               +{selectedHour}h
             </span>
-            <span className="text-slate-300 font-medium">
+            <span className="text-slate-200 font-medium">
               {hourEntry?.time ? formatDateTime(hourEntry.time) : `Departure + ${selectedHour} hours`}
             </span>
             {selectedHour === 0 && (
@@ -134,7 +133,7 @@ export default function HeatmapControl({
           </div>
 
           {/* Quick jump pills */}
-          <div className="hidden sm:flex items-center gap-1 text-[11px]">
+          <div className="flex items-center gap-1 text-[11px]">
             {[0, 12, 24, 48].map((h) => (
               <button
                 key={h}
@@ -152,15 +151,15 @@ export default function HeatmapControl({
           </div>
         </div>
 
-        {/* 0-48 Hour Range Slider */}
+        {/* 0-48 Hour Range Slider with Play/Pause */}
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={togglePlay}
-            className={`p-2 rounded-xl text-white transition shadow-sm ${
+            className={`p-2.5 rounded-xl text-white transition shadow-sm ${
               isPlaying
-                ? 'bg-amber-600 hover:bg-amber-500'
-                : 'bg-blue-600 hover:bg-blue-500'
+                ? 'bg-amber-600 hover:bg-amber-500 ring-2 ring-amber-500/40'
+                : 'bg-blue-600 hover:bg-blue-500 shadow-blue-500/30'
             }`}
             title={isPlaying ? 'Pause simulation' : 'Play 48-hour simulation'}
           >
@@ -179,7 +178,7 @@ export default function HeatmapControl({
             />
             {/* Ticks for 0, 12, 24, 36, 48 */}
             <div className="flex justify-between text-[10px] text-slate-500 font-mono mt-1 px-1">
-              <span>0h</span>
+              <span>0h (Departure)</span>
               <span>12h</span>
               <span>24h</span>
               <span>36h</span>
@@ -193,7 +192,7 @@ export default function HeatmapControl({
               setIsPlaying(false);
               onChangeHour(0);
             }}
-            className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition"
+            className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition"
             title="Reset slider to departure (0h)"
           >
             <RotateCcw className="w-4 h-4" />
@@ -201,7 +200,7 @@ export default function HeatmapControl({
         </div>
 
         {/* Selected Hour Corridor Conditions Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">
           <div className="bg-slate-800/60 rounded-xl p-2 border border-slate-700/50 flex items-center justify-between">
             <span className="text-slate-400 text-[11px] flex items-center gap-1">
               <Wind className="w-3.5 h-3.5 text-cyan-400" />
@@ -235,7 +234,7 @@ export default function HeatmapControl({
           <div className="bg-slate-800/60 rounded-xl p-2 border border-slate-700/50 flex items-center justify-between">
             <span className="text-slate-400 text-[11px] flex items-center gap-1">
               <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
-              Corridor Hazard
+              Corridor Risk
             </span>
             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${peakRiskDetails.badge}`}>
               {peakRiskDetails.label}

@@ -22,6 +22,7 @@ export default function App() {
     error: null,
   });
 
+  const [lastSubmittedTrip, setLastSubmittedTrip] = useState(null);
   const [selectedRouteId, setSelectedRouteId] = useState(null);
   const [selectedCheckpointId, setSelectedCheckpointId] = useState(null);
   const [selectedHour, setSelectedHour] = useState(0);
@@ -33,6 +34,7 @@ export default function App() {
   // Submit trip planning request to Django backend
   const handlePlanTrip = async (payload) => {
     setPlanningState({ status: 'loading', data: null, error: null });
+    setLastSubmittedTrip(payload);
     setSelectedCheckpointId(null);
     setSelectedHour(0);
 
@@ -53,7 +55,6 @@ export default function App() {
 
       setPlanningState({ status: 'success', data: json, error: null });
 
-      // Automatically select recommended route if available, otherwise first route
       const recId = json.recommendation?.recommended_route_id;
       const initialRouteId = recId || json.routes?.[0]?.id;
       setSelectedRouteId(initialRouteId);
@@ -67,7 +68,7 @@ export default function App() {
     }
   };
 
-  // Optional: Auto-load initial sample trip on first mount for instant demo!
+  // Initial demo load
   useEffect(() => {
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -90,7 +91,6 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
-
   const routes = planningState.data?.routes || [];
   const recommendation = planningState.data?.recommendation || {};
   const corridorWeather = planningState.data?.corridorWeather || planningState.data?.corridor_weather;
@@ -98,18 +98,22 @@ export default function App() {
   const activeRoute = routes.find((r) => r.id === selectedRouteId) || routes[0];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="h-screen w-screen bg-slate-950 text-slate-100 flex flex-col font-sans overflow-hidden">
       {/* Top Navbar */}
-      <Navbar onOpenInfo={() => setIsInfoModalOpen(true)} />
+      <Navbar
+        onOpenInfo={() => setIsInfoModalOpen(true)}
+        tripSummary={lastSubmittedTrip}
+      />
 
-      {/* Main App Container */}
-      <main className="flex-1 max-w-[1720px] w-full mx-auto p-3 sm:p-5 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Left Column: Form, Route Comparisons, and Checkpoints (5 cols on lg) */}
-        <section className="lg:col-span-5 flex flex-col gap-4 order-2 lg:order-1">
+      {/* Main SaaS Workspace */}
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+        {/* Left Sidebar (Trip Setup, Routes Comparison, Checkpoints) */}
+        <aside className="w-full lg:w-[480px] xl:w-[520px] shrink-0 h-auto lg:h-full flex flex-col bg-slate-950 border-r border-slate-800/80 overflow-y-auto p-4 gap-4 z-10 shadow-2xl">
           {/* Trip Input Form */}
           <TripForm
             onSubmit={handlePlanTrip}
             isLoading={planningState.status === 'loading'}
+            hasResults={planningState.status === 'success' && routes.length > 0}
           />
 
           {/* Error Banner */}
@@ -130,10 +134,10 @@ export default function App() {
                     load_weight: 35000,
                     checkpoint_interval: 25,
                   })}
-                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-900/60 hover:bg-red-800 text-white font-medium transition"
+                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-900/60 hover:bg-red-800 text-white font-medium transition"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Retry with New York → Philadelphia</span>
+                  <span>Retry with Default Haul</span>
                 </button>
               </div>
             </div>
@@ -141,14 +145,14 @@ export default function App() {
 
           {/* Results: Navigation Tabs for Routes vs Checkpoints */}
           {planningState.status === 'success' && routes.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+            <div className="flex flex-col gap-3.5">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setActiveTab('routes')}
                     className={`flex items-center gap-1.5 text-xs font-semibold py-1.5 px-3 rounded-xl transition ${
                       activeTab === 'routes'
-                        ? 'bg-blue-600 text-white shadow-sm'
+                        ? 'bg-blue-600 text-white shadow-md'
                         : 'text-slate-400 hover:text-white hover:bg-slate-800'
                     }`}
                   >
@@ -159,7 +163,7 @@ export default function App() {
                     onClick={() => setActiveTab('checkpoints')}
                     className={`flex items-center gap-1.5 text-xs font-semibold py-1.5 px-3 rounded-xl transition ${
                       activeTab === 'checkpoints'
-                        ? 'bg-blue-600 text-white shadow-sm'
+                        ? 'bg-blue-600 text-white shadow-md'
                         : 'text-slate-400 hover:text-white hover:bg-slate-800'
                     }`}
                   >
@@ -199,12 +203,12 @@ export default function App() {
               )}
             </div>
           )}
-        </section>
+        </aside>
 
-        {/* Right Column: Interactive Map & 0-48h Weather Heatmap Slider (7 cols on lg) */}
-        <section className="lg:col-span-7 flex flex-col gap-4 order-1 lg:order-2">
-          {/* Map View */}
-          <div className="flex-1 min-h-[460px] lg:min-h-[580px]">
+        {/* Right Panel: Interactive Full-Viewport Map & Floating Heatmap Dock */}
+        <main className="flex-1 h-full relative overflow-hidden bg-slate-900 flex flex-col">
+          {/* Interactive Map */}
+          <div className="w-full h-full relative">
             <MapView
               routes={routes}
               selectedRouteId={selectedRouteId}
@@ -220,22 +224,24 @@ export default function App() {
               isHeatmapVisible={isHeatmapVisible}
               heatmapMode={heatmapMode}
             />
-          </div>
 
-          {/* Phase 12: 0-48h Corridor Forecast Slider & Heatmap Controls */}
-          {corridorWeather && (
-            <HeatmapControl
-              corridorWeather={corridorWeather}
-              selectedHour={selectedHour}
-              onChangeHour={setSelectedHour}
-              heatmapMode={heatmapMode}
-              onChangeMode={setHeatmapMode}
-              isHeatmapVisible={isHeatmapVisible}
-              onToggleVisibility={() => setIsHeatmapVisible((v) => !v)}
-            />
-          )}
-        </section>
-      </main>
+            {/* Floating Corridor Heatmap & 0-48h Slider Dock */}
+            {corridorWeather && (
+              <div className="absolute bottom-5 left-4 right-4 sm:left-auto sm:right-6 sm:w-[620px] xl:w-[680px] z-20 pointer-events-auto">
+                <HeatmapControl
+                  corridorWeather={corridorWeather}
+                  selectedHour={selectedHour}
+                  onChangeHour={setSelectedHour}
+                  heatmapMode={heatmapMode}
+                  onChangeMode={setHeatmapMode}
+                  isHeatmapVisible={isHeatmapVisible}
+                  onToggleVisibility={() => setIsHeatmapVisible((v) => !v)}
+                />
+              </div>
+            )}
+          </div>
+        </main>
+      </div>
 
       {/* Assessment Risk Rules & Priority Modal */}
       <RiskLegendModal
