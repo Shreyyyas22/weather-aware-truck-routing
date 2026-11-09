@@ -32,17 +32,25 @@ def plan_trip(data, routing_service, weather_service):
 
     try:
         routes = routing_service.plan_routes(data["origin"], data["destination"], 3)
+        route_checkpoints = []
+        for route in routes:
+            cps = generate_checkpoints(route["geometry"], data["checkpoint_interval"])
+            cps = assign_checkpoint_etas(cps, departure_time, route["distance_meters"], route["duration_seconds"])
+            route_checkpoints.append(cps)
+
+        if hasattr(weather_service, "prefetch_corridor"):
+            all_coords = [(cp["latitude"], cp["longitude"]) for cps in route_checkpoints for cp in cps]
+            weather_service.prefetch_corridor(all_coords, departure_time)
+
         planned_routes = []
         recommendation_routes = []
         has_unavailable_weather = False
-        for route in routes:
-            checkpoints = generate_checkpoints(route["geometry"], data["checkpoint_interval"])
-            checkpoints = assign_checkpoint_etas(checkpoints, departure_time, route["distance_meters"], route["duration_seconds"])
+        for route, checkpoints in zip(routes, route_checkpoints):
             checkpoints = weather_service.annotate_checkpoints(checkpoints)
             risk_checkpoints = []
             for checkpoint in checkpoints:
                 weather = checkpoint["weather"]
-                if weather["status"] == "available":
+                if weather.get("status") == "available":
                     risk = calculate_checkpoint_risk(
                         weather["wind_speed_mph"], weather["rain_rate_inches_per_hour"],
                         weather["snow_rate_inches_per_hour"], load_weight,
@@ -56,6 +64,18 @@ def plan_trip(data, routing_service, weather_service):
             planned_routes.append(planned_route)
             if all(point["overall_risk"] != "UNAVAILABLE" for point in risk_checkpoints):
                 recommendation_routes.append({**route, "checkpoints": risk_checkpoints[1:]})
+
+        corridor_weather = None
+        if hasattr(weather_service, "get_corridor_timeline"):
+            unique_coords = []
+            seen = set()
+            for cps in route_checkpoints:
+                for cp in cps:
+                    key = (round(cp["latitude"], 3), round(cp["longitude"], 3))
+                    if key not in seen:
+                        seen.add(key)
+                        unique_coords.append((cp["latitude"], cp["longitude"]))
+            corridor_weather = weather_service.get_corridor_timeline(unique_coords, departure_time, load_weight)
     except (RoutingProviderError, WeatherProviderError) as error:
         raise RuntimeError(str(error)) from error
     except ValueError as error:
@@ -71,4 +91,8 @@ def plan_trip(data, routing_service, weather_service):
         }
     else:
         recommendation = recommend_routes(recommendation_routes)
-    return {"routes": planned_routes, "recommendation": recommendation}
+    return {
+        "routes": planned_routes,
+        "recommendation": recommendation,
+        "corridor_weather": corridor_weather,
+    }
