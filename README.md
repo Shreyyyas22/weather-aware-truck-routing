@@ -35,13 +35,13 @@ weather-aware-truck-routing/
 
 ## Key Features
 
-1. **Trip Planning Form (Phase 9)**
+1. **Trip Planning Form**
    - Enter Origin, Destination, Departure Date/Time, and Truck Load Weight (lb).
    - Configurable checkpoint intervals: **10, 25, or 50 miles**.
    - 1-click test haul presets (e.g. *New York → Philadelphia*, *New York → Chicago*, *Dallas → Denver*).
    - Quick weight buttons for testing load-specific threshold rules (15k, 32k, 45k lb).
 
-2. **Route Comparison & Recommendation Engine (Phase 10)**
+2. **Route Comparison & Recommendation Engine**
    - Generates up to 3 alternative truck routes.
    - Summarizes **Severe miles**, **High-risk miles**, **Average risk score**, and **Estimated duration**.
    - Highlights the **RECOMMENDED** route with clear human-readable explanations of why it won.
@@ -52,20 +52,20 @@ weather-aware-truck-routing/
      3. Lowest average risk score
      4. Shortest travel time
 
-3. **Checkpoint Inspector Table (Phase 10)**
+3. **Checkpoint Inspector Table**
    - Inspect individual checkpoints along the route.
    - Shows mile progression, estimated arrival time (ETA), wind speed (mph), rain rate (in/hr), snow rate (in/hr), and individual condition risks.
    - Filter chips to quickly isolate High, Severe, or No Travel segments.
    - One-click "Locate" action to focus and open popups on the map.
 
-4. **Interactive Map Visualization (Phase 11)**
+4. **Interactive Map Visualization**
    - Interactive Leaflet map with custom dark/voyager styling.
    - Distinct color-coded route polylines; recommended route is emphasized with glow styling.
    - Checkpoint markers color-coded by overall risk (Low: Green, Moderate: Amber, High: Orange, Severe: Red, No Travel: Purple).
    - Interactive popups with complete weather breakdown and load-rule violation details.
    - Origin and Destination pins with automatic bounds fitting.
 
-5. **Trip Corridor Weather Heatmap & 0–48 Hour Forecast Slider (Phase 12)**
+5. **Trip Corridor Weather Heatmap & 0–48 Hour Forecast Slider**
    - Spatial weather heatmap along the trip corridor.
    - Interactive **0 to 48 hour timeline slider** (1-hour step resolution).
    - **Play / Pause simulation** button to animate forecast changes across the 48 hours.
@@ -176,42 +176,6 @@ cd frontend
 npm run build
 ```
 
----
-
-## Loom Walkthrough Guide (5–10 Minutes)
-
-When recording your assessment walkthrough, follow this structured outline:
-
-1. **Introduction (1 min):**
-   - Introduce the project goal: Weather-aware truck routing comparing 3 alternative options by ETA-specific weather risk, load rules, and travel time.
-   - Mention the tech stack: React + Vite + Tailwind CSS on the frontend, Django + DRF on the backend.
-2. **Trip Form & Inputs (1 min):**
-   - Demonstrate entering Origin (*New York, NY*), Destination (*Philadelphia, PA* or *Chicago, IL*), departure date/time, and load weight (*35,000 lb*).
-   - Show the quick preset hauls and the checkpoint interval selection (10, 25, 50 miles).
-3. **Route Comparison & Recommendation (2 min):**
-   - Click "Plan & Compare 3 Routes".
-   - Show the 3 generated route cards.
-   - Point out the **RECOMMENDED** route badge and explain the winning rationale (fewest severe miles, fewest high miles, lowest average risk, shortest time).
-   - Show how the metrics matrix compares distance, time, severe miles, and average risk.
-4. **Checkpoint Inspection (1.5 min):**
-   - Switch to the "Checkpoints" tab.
-   - Explain how weather is sampled at the truck's exact estimated arrival time (ETA), not current time.
-   - Demonstrate filtering checkpoints by risk (High/Severe, No Travel).
-   - Click "Locate" on a checkpoint to zoom and open its popup on the map.
-5. **Interactive Map (1.5 min):**
-   - Show the 3 distinct route lines.
-   - Click on Route 2 or Route 3 to make it active on the map.
-   - Click checkpoint markers to inspect wind, rain, snow, and overall risk levels.
-6. **Corridor Weather Heatmap & 0–48h Forecast Slider (1.5 min):**
-   - Click the "Play" button on the 0–48 hour slider.
-   - Watch the weather intensity sweep across the trip corridor over time.
-   - Switch heatmap modes: *Composite Risk*, *Wind Speed*, *Precipitation*.
-   - Point out the live corridor stats (Peak Wind, Peak Rain, Hazard tier).
-7. **Code & Architecture Highlights (1 min):**
-   - Briefly show backend test suite (36 tests passing in 20ms).
-   - Point out separation of concerns: routing service, weather service, pure risk calculation engine, recommendation priority logic.
-
----
 
 ## Assumptions & Design Decisions
 
